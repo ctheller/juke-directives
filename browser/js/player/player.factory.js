@@ -7,7 +7,9 @@ juke.factory('PlayerFactory', function ($rootScope) {
   var playing = false,
       currentSong = null,
       currentList = [],
-      progress = 0;
+      progress = 0,
+      randomList = [],
+      shuffleOn = false;
 
   // initialize the audio element
 
@@ -40,6 +42,10 @@ juke.factory('PlayerFactory', function ($rootScope) {
     return playing;
   };
 
+  player.isShuffling = function () {
+    return shuffleOn;
+  };
+
   player.getCurrentSong = function () {
     return currentSong;
   };
@@ -47,9 +53,20 @@ juke.factory('PlayerFactory', function ($rootScope) {
   function mod (num, m) { return ((num % m) + m) % m; };
 
   function skip (interval) {
+    if (shuffleOn) {
+      var index = randomList.indexOf(currentSong);
+      index = mod(index + interval, randomList.length);
+       player.pause();
+      audio.src = randomList[index].audioUrl;
+      audio.load();
+      currentSong = randomList[index];
+      player.resume();
+    }
+    else {
     var index = currentList.indexOf(currentSong);
     index = mod(index + interval, currentList.length);
     player.start(currentList[index], currentList);
+    }
   }
 
   player.next = function () {
@@ -67,6 +84,28 @@ juke.factory('PlayerFactory', function ($rootScope) {
   player.seek = function (decimal) {
     audio.currentTime = audio.duration * decimal;
   };
+
+  player.random = function(){
+    shuffleOn = !shuffleOn;
+    if (!shuffleOn) return;
+    var temp = currentList.slice(0);
+    while(randomList.length < currentList.length){
+      var randomElem = temp[Math.floor(Math.random()*temp.length)];
+      if (randomList.indexOf(randomElem) == -1){
+        randomList.push(randomElem);
+        temp.splice(temp.indexOf(randomElem), 1);
+      }
+    }
+    if (!playing) {
+      player.pause();
+      audio.src = randomList[0].audioUrl;
+      audio.load();
+      currentSong = randomList[0];
+      player.resume();
+    }
+    console.log(randomList);
+    console.log(currentList);
+  }
 
   // audio event listening
 
