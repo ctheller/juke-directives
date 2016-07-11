@@ -3,7 +3,7 @@ juke.directive('songList', function(PlayerFactory){
 		restrict: 'E',
 		templateUrl: "js/song/song.list.template.html",
 		scope: {
-			songs: '=', 
+			songs: '='  
 		},
 		link: function(scope){
 				scope.getCurrentSong = function () {
@@ -23,6 +23,20 @@ juke.directive('songList', function(PlayerFactory){
 			      PlayerFactory.resume();
 			    }
 			  };
+		}
+	}
+})
+
+juke.directive('doubleClick', function(){
+	return {
+		restrict: 'A',
+		scope: {
+			toggle: '&doubleClick'
+		},
+		link: function(scope, element, attrs){
+			element.on('dblclick', function(){
+				scope.toggle();
+			})
 		}
 	}
 })
