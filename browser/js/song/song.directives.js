@@ -31,7 +31,7 @@ juke.directive('doubleClick', function(){
 	return {
 		restrict: 'A',
 		scope: {
-			toggle: '&doubleClick'
+			'toggle': '&doubleClick'
 		},
 		link: function(scope, element, attrs){
 			element.on('dblclick', function(){
